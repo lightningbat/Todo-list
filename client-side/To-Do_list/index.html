@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo</title>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token){
+            window.location.href = '/SignUp';
+        }
+
+        let applied_theme = false; // true = dark, false = light
+
+        fetch('/get_theme', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.theme) {
+                document.body.classList.add('dark-theme');
+                applied_theme = true;
+            }
+        })
+        .catch(err => console.error(err));
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1 onclick="toggleTheme()" class="title transp-cursor">todo</h1>
+        <div class="add-icon transp-cursor" onclick="open_task_editor()">+</div>
+    </div>
+    <div class="content-cont">
+        <div class="labels-cont transp-cursor">
+            <div class="populater" onclick="open_label_editor()">
+                <p>Labels</p>
+                <span>+</span>
+            </div>
+            <div class="labels"></div>
+        </div>
+        
+        <div class="notes-cont"></div>
+    </div>
+
+    <div class="popup-back"></div>
+
+    <div class="phone-lbl-popup">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x close-btn" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+        <div class="lbl-display">
+            <div class="lbl-color"></div>
+            <p class="lbl-text"></p>
+        </div>
+        <div class="btn-holder">
+            <button class="btn-del">Delete</button>
+            <button class="btn-edit">Edit</button>
+        </div>
+    </div>
+
+    <div class="custom-confirm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+        </svg>
+        <h3 class="confirm-title">Confirm Delete?</h3>
+        <p class="confirm-message">All the notes inside this label will be deleted</p>
+        <div class="btn-holder">
+            <span class="btn-cancel">Cancel</span>
+            <span class="btn-delete">Delete</span>
+        </div>
+    </div>
+
+    <template id="temp--task-editor">
+        <div class="note-editor">
+            <div class="btns-cont transp-cursor">
+                <p class="btn-cancel" onclick="close_task_editor()">Cancel</p>
+                <p class="btn-save">Create</p>
+            </div>
+            <form>
+                <label for="title-input">Title</label>
+                <input type="text" placeholder="add a title .." id="title-input">
+                <label for="description-input">Description</label>
+                <textarea placeholder="add a description ..." id="description-input"></textarea>
+            </form>
+            <p class="priority-lbl">Priority</p>
+            <div class="priorities-cont transp-cursor">
+                <div class="priority urgent" onclick="select_priority(0)">
+                    <div class="priority-clr"></div>
+                    <p>Urgent</p>
+                </div>
+                <div class="priority high" onclick="select_priority(1)">
+                    <div class="priority-clr"></div>
+                    <p>High</p>
+                </div>
+                <div class="priority medium" onclick="select_priority(2)">
+                    <div class="priority-clr"></div>
+                    <p>Medium</p>
+                </div>
+                <div class="priority low" onclick="select_priority(3)">
+                    <div class="priority-clr"></div>
+                    <p>Low</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="temp--label-editor">
+        <div class="label-editor">
+            <p class="editor-title">New Label</p>
+            <div class="color-and-input-cont">
+                <div class="label-color" onclick="open_clr_selector()"> <!-- set class clr-selected -->
+                    <svg width="368" height="315" viewBox="0 0 368 315" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M281.439 207.396C281.789 203.483 281.968 199.515 281.968 195.5C281.968 129.502 224.796 41.5 173.976 0C151.964 17.9594 129.271 43.8655 110.404 72.7752L281.439 207.396ZM276.488 233.187C262.224 280.718 221.718 315 173.976 315C114.333 315 65.9838 261.498 65.9838 195.5C65.9838 163.719 78.9465 127.068 98.2042 92.8605L276.488 233.187Z"/>
+                        <rect width="28.5819" height="439.736" rx="14" transform="matrix(0.785791 -0.618492 0.785791 0.618492 0 35.6777)"/>
+                    </svg>
+                </div>
+                <input type="text" placeholder="Label name">
+            </div>
+            <div class="btns-cont">
+                <P class="btn-cancel" onclick="close_label_editor()">Cancel</P>
+                <p class="btn-create">Create</p>
+            </div>
+        </div>
+    </template>
+
+    <template id="temp--clr-selector">
+        <div class="clr-selector-cont transp-cursor">
+            <div class="clr-selector-back" onclick="close_clr_selector()"></div>
+            <div class="clr-selector">
+                <div class="row-column">
+                    <p class="label">Select color</p>
+                    <p class="btn-cancel" onclick="close_clr_selector()">Cancel</p>
+                </div>
+                <div class="colors-cont">
+                    <div class="clr-red-1"></div>
+                    <div class="clr-red-2"></div>
+                    <div class="clr-red-3"></div>
+                    <div class="clr-orange-1"></div>
+                    <div class="clr-orange-2"></div>
+                    <div class="clr-orange-3"></div>
+                    <div class="clr-yellow-1"></div>
+                    <div class="clr-yellow-2"></div>
+                    <div class="clr-green-1"></div>
+                    <div class="clr-green-2"></div>
+                    <div class="clr-green-3"></div>
+                    <div class="clr-blue-1"></div>
+                    <div class="clr-blue-2"></div>
+                    <div class="clr-blue-3"></div>
+                    <div class="clr-blue-4"></div>
+                    <div class="clr-blue-5"></div>
+                    <div class="clr-blue-6"></div>
+                    <div class="clr-blue-7"></div>
+                    <div class="clr-voilet-1"></div>
+                    <div class="clr-purple-1"></div>
+                    <div class="clr-pink-1"></div>
+                    <div class="clr-pink-2"></div>
+                    <div class="clr-pink-3"></div>
+                    <div class="clr-white_black"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="temp--label">
+        <div class="label">
+            <div class="label-color"></div>
+            <p class="label-text">general</p>
+            <div class="menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" onclick="open_label_menu(this.parentNode.parentNode.id, event)" viewBox="0 0 16 16">
+                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                </svg>
+                <div class="popup">
+                    <p class="edit-btn" onclick="open_label_editor(this.parentNode.parentNode.parentNode.id, event)">Edit</p>
+                    <div class="hr-line"></div>
+                    <p class="del-btn" onclick="delete_label(this.parentNode.parentNode.parentNode.id, event)">Delete</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="temp--task">
+        <div class="task">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" onclick="open_task_menu(this.parentNode.id)" class="three-dots" viewBox="0 0 16 16">
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+            </svg>
+            <div class="popup transp-cursor">
+                <p class="edit-btn" onclick="open_task_editor(this.parentNode.parentNode.id)">Edit ...</p>
+                <div class="hr-line"></div>
+                <p class="del-btn" onclick="delete_task(this.parentNode.parentNode.id)">Delete</p>
+            </div>
+            <div class="task-details">
+                <h2></h2>
+                <p class="description"></p>
+            </div>
+            <div class="task-footer transp-cursor">
+                <div class="details">
+                    <p class="_date">9:45 AM</p>
+                    <div class="priority-clr"></div>
+                </div>
+                <div class="checkbox-cont" onclick="toggle_task_checkbox(this.parentNode.parentNode.id)">
+                    <svg width="141" height="133" viewBox="0 0 141 133" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="5" y="40" width="88" height="88" rx="22" stroke="currentColor" stroke-width="10"/>
+                    </svg>
+                    <svg width="141" height="133" viewBox="0 0 141 133" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M46.4293 93.1598C37.508 78.6306 29.2525 72.4888 15.1154 63.4679C16.9215 59.4872 18.1163 58.2848 18.1163 58.2848C33.9616 62.1809 41.826 69.5115 54.3796 81.8104C49.9305 88.8412 47.3237 94.6164 46.4293 93.1598Z"/>
+                        <path d="M57.2224 110.452C74.122 75.688 88.0966 55.5042 138.843 26.1511C138.256 22.2053 138.065 20.9167 138.065 20.9167C92.271 37.9088 73.595 56.0761 46.0382 92.3108C49.7492 99.4631 57.2224 110.452 57.2224 110.452Z"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M71 35H27C12.0883 35 0 47.0883 0 62V106C0 120.912 12.0883 133 27 133H71C85.9117 133 98 120.912 98 106V62C98 60.73 97.9123 59.4806 97.7427 58.2573L88.1451 67.8549C88.0993 67.9007 88.0507 67.9409 88 67.9756V106C88 115.389 80.3888 123 71 123H27C17.6112 123 10 115.389 10 106V62C10 52.6112 17.6112 45 27 45H71C74.8093 45 78.326 46.2529 81.1604 48.3691L89.375 42.217C84.5557 37.7387 78.0977 35 71 35Z"/>
+                    </svg>
+                    <span>Done</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="scripts/variables.js"></script>
+    <script src="scripts/layout_manager.js"></script>
+    <script src="scripts/data_manager.js"></script>
+</body>
+</html>

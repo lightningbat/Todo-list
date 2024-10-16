@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body{
+            background-image: linear-gradient(120deg, #504c7f, #d6708c);
+            font-size: 10px;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+        }
+        *{
+            box-sizing: border-box;
+        }
+        #root{
+            height: 40em;
+            min-height: fit-content;
+            padding-bottom: 2em;
+            width: 30em;
+            background-color: rgba(255, 217, 246, 0.212);
+            border-radius: 1em;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        h1{
+            width: fit-content;
+            margin: auto;
+            margin-top: 1.5em;
+            font-size: 2.5em;
+            font-weight: 800;
+        }
+
+        .loader{
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        .loader .spinner-cont{
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .loader .spinner{
+            border: 2px solid transparent;
+            border-top:  4px solid #ffffffcb; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2.5s linear infinite;
+        }
+        .loader .spinner.size-60{
+            width: 60px;
+            height: 60px;
+        }
+        .loader .spinner.size-90{
+            width: 90px;
+            height: 90px;
+        }
+        .loader .spinner.fast{
+            animation-duration: 1.3s;
+        }
+        .loader .spinner.reverse{
+            animation-name: spin-reverse;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+
+        form{
+            text-align: center;
+        }
+        form input{
+            width: 80%;
+            margin: 0;
+            margin-top: 2rem;
+            border-radius: 0.8em;
+            border: 2px solid white;
+            background-color: transparent;
+            color: white;
+            padding: 0.5em 1em;
+            letter-spacing: 0.01em;
+            font-size: 1.8em;
+            outline: none;
+        }
+        input::placeholder{
+            color: white;
+        }
+        .pass-cont{
+            width: 80%;
+            border-radius: 1.4em;
+            border: 2px solid white;
+            display: flex;
+            margin: auto;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+        .pass-cont input{
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+            flex: 1;
+            padding-right: 0.5em;
+        }
+        .pass-cont .icon-cont{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5em;
+            height: inherit;
+            border-left: 2px solid white;
+            background-color: #d1a0c2;
+        }
+        .pass-cont .icon-hide{
+            display: none;
+        }
+        .pass-cont.pass-visible .icon-hide{
+            display: block;
+        }
+        .pass-cont.pass-visible .icon-show{
+            display: none;
+        }
+        #pass-reset{
+            width: fit-content;
+            margin: auto;
+            margin-top: 0.3em;
+            font-size: 1.1em;
+            letter-spacing: 0.02em;
+            float: right;
+            margin-right: 11%;
+            padding: 0.3em 0.5em;
+        }
+        .response{
+            text-align: left;
+            width: 80%;
+            margin: auto;
+            margin-top: 2.5em;
+            display: flex;
+            align-items: center;
+            background-color: rgba(241, 34, 34, 0.26);
+            padding-left: 1em;
+            border-radius: 1em;
+            border: 1px solid rgba(255, 208, 0, 0.527);
+            visibility: hidden;
+        }
+        .response p{
+            flex: 1;
+            font-size: 1.3em;
+            margin: 0;
+            letter-spacing: 0.02em;
+            padding: 0.2em 0;
+            line-height: 1.5;
+        }
+        .response svg{
+            padding: 0.3em;
+            height: 3em;
+            width: 3em;
+        }
+        #login{
+            margin-top: 0.7rem;
+            border-radius: 2em;
+            width: fit-content;
+            padding: 0.5em 2em;
+        }
+        .signup{
+            margin-top: 1.5rem;
+            font-size: 1.2em;
+            letter-spacing: 0.02em;
+        }
+        .signup a{
+            color: #a74e82;
+            letter-spacing: 0;
+            font-weight: 800;
+            text-decoration: none;
+            padding: 0.3em 0.8em;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <h1>Welcome back!</h1>
+        <div class="loader">
+            <div class="spinner"></div>
+            <div class="spinner-cont">
+                <div class="spinner size-60 fast"></div>
+            </div>
+            <div class="spinner-cont">
+                <div class="spinner size-90 reverse"></div>
+            </div>
+        </div>
+        <form>
+            <input type="email" placeholder="Email" id="email" autocomplete="email">
+            <div class="pass-cont"><!--use <pass-visible> to toggle icon-->
+                <input type="password" placeholder="Password" spellcheck="false" id="password">
+                <div class="icon-cont">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill icon-show" viewBox="0 0 16 16">
+                        <path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.027 7.027 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.088z"/>
+                        <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6l-12-12 .708-.708 12 12-.708.707z"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill icon-hide" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                    </svg>
+                </div>
+            </div>
+            <p style="display: none;" id="pass-reset">Forgot Password?</p>
+
+            <div class="response">
+                <p>Email already exist please login</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </div>
+
+            <input type="submit" value="LogIn" id="login">
+
+            <p class="signup">Don't have an account? <a href="/SignUp">Sign Up</a></p>
+        </form>
+    </div>
+
+    <script>
+        const loader = document.querySelector('.loader');
+        const form = document.querySelector('form');
+        const submit = document.querySelector('input[type="submit"]');
+        const resp_txtBox = document.querySelector('.response');
+
+        const show_loader = () => {
+            loader.style.display = 'block';
+            form.style.display = 'none';
+        }
+
+        const hide_loader = () => {
+            loader.style.display = 'none';
+            form.style.display = 'block';
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            show_loader();
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: (form.email.value).trim(),
+                    password: form.password.value
+                })
+            })
+            .then(result => {
+                if (result.ok) {
+                    return result.json()
+                }
+                return result.text().then(text => { throw new Error(text) })
+            })
+            .then(response => {
+                localStorage.setItem('token', response.token);
+                window.location.href = '/';
+            })
+            .catch(err => {
+                hide_loader();
+                resp_txtBox.children[0].innerHTML = err.message;
+                resp_txtBox.style.visibility = 'visible';
+            })
+        })
+
+        const pass_cont = document.querySelector('.pass-cont');
+
+        pass_cont.children[1].addEventListener('click', () => {
+            pass_cont.classList.toggle('pass-visible');
+            if(pass_cont.classList.contains('pass-visible')){
+                pass_cont.children[0].type = 'text';
+            }
+            else{
+                pass_cont.children[0].type = 'password';
+            }
+        })
+
+        resp_txtBox.children[1].addEventListener('click', () => {
+            resp_txtBox.children[0].innerHTML = 'well, hello there';
+            resp_txtBox.style.visibility = 'hidden';
+        })
+    </script>
+</body>
+</html>
